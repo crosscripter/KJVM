@@ -1,0 +1,39 @@
+<script>
+    window.addEventListener('load', function(e) {
+        const speak = async e => {
+            var voices = [] // await window.speechSynthesis.getVoices();
+            const msg = new SpeechSynthesisUtterance();
+            msg.rate = 1; // From 0.1 to 10
+            msg.volume = 1; // From 0 to 1
+            msg.pitch = 1; // From 0 to 2
+
+            let wait = setInterval(() => {
+                if (voices.length > 0) {
+                    clearInterval(wait)
+                    console.log(voices)
+                    msg.text = Array.from(document.querySelectorAll('span.v')).map(x => x.innerText.replace(/^\d+/g, '')).join(' ')
+                    console.log('message: ', msg.text)
+
+                    for (var i = 0; i < voices.length; i++) {
+                        (function(i) { 
+                            setTimeout(function () {
+                                document.getElementById('voice').innerText = voices[i].name
+                                msg.voice = voices[i]; 
+                                window.speechSynthesis.speak(msg);
+                            }, i * 5000)
+                        })(i)
+                    }
+               }
+                else voices = window.speechSynthesis.getVoices();
+            }, 2000)
+       }
+
+        document.querySelector('#speak').addEventListener('click', speak)
+    })
+</script>
+Voice: <span id='voice'>...</span>
+<br/>
+<span class='v'><sup>1</sup>This is an example</span>
+<span class='v'><sup>2</sup>This is <q>yet another</q> <a href='#'>example</a> with <i>formatting</i><table style="display:none;"></table></span>
+<br/>
+<input id='speak' type='button' value='speak' />
